@@ -6,7 +6,8 @@ weather_api = 'a0b60fdadbff75ee2e48ebb59ab78815'  # апи с openweathermap д�
 def get_weather(user, bot, message, city="Москва"):
     try:
         res = requests.get("http://api.openweathermap.org/data/2.5/find",
-                           params={'q': city, 'units': 'metric', 'lang': 'ru', 'APPID': weather_api})
+                           params={'lat': user.location.latitude, 'lon': user.location.longitude,
+                                   'units': 'metric', 'lang': 'ru', 'APPID': weather_api})
         data = res.json()
         weather = data['list'][0]
 
@@ -19,7 +20,7 @@ def get_weather(user, bot, message, city="Москва"):
             emojis += '☁️️️'
 
         response = [
-            f'_Погода в городе {city}_\n\n',
+            f'_Погода по вашему местоположению_\n\n',
             f'{weather["weather"][0]["description"].capitalize()} {emojis}\n',
             f'Температура         *{weather["main"]["temp"]}* ℃\n',
             f'Ощущается как    *{weather["main"]["feels_like"]}* ℃\n'
