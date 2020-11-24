@@ -61,7 +61,11 @@ def send_text(message):
         # курс валют
 
     elif message.text.lower() == 'погода':
-        bot.send_message(message.chat.id, ''.join(weather.get_weather()))  # погода из файла weather.py
+        if user.location == {}:  # если локация ещё не записана
+            bot.send_message(message.chat.id, 'Повторите попытку после включения геоданных')
+            get_geo(message)
+        else:
+            weather.get_weather(user, bot, message)
         # погода
 
     else:
