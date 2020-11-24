@@ -5,11 +5,18 @@ import users
 bot = telebot.TeleBot('1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8')
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-global_markup.row('Интересные места', 'Обновить геолокацию')
+global_markup.row('Интересные места', 'Обновить мою геолокацию')
 global_markup.row('Погода', 'Курс валют')
 
 
 # current_ind = -1  # индекс пользователя в массиве пользователей
+
+
+def get_geo(message):
+    location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
+    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    markup.row(location_btn)
+    bot.send_message(message.chat.id, 'Включите геоданные', reply_markup=markup)
 
 
 @bot.message_handler(commands=['start'])
@@ -32,13 +39,8 @@ def send_text(message):
         bot.send_message(message.chat.id, 'До связи!')
         # простые сообщения
 
-
-    elif message.text.lower() == 'обновить геолокацию':
-        print('m', message)
-        location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
-        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        markup.row(location_btn)
-        bot.send_message(message.chat.id, 'Включите геоданные', reply_markup=markup)
+    elif message.text.lower() == 'обновить мою геолокацию':
+        get_geo(message)
         # запрос геоданных
 
     elif message.text.lower() == 'интересные места':
@@ -69,7 +71,8 @@ def sticker_id(message):
 @bot.message_handler(content_types=['location'])
 def handle_loc(message):
     bot.send_message(message.chat.id, 'Мы получили вашу геолокацию', reply_markup=global_markup)
-    # print(message.location)
+    users.users_list[message.from_user.id].location = message.location
+    # print(users.users_list[message.from_user.id].location)
 
 
 bot.polling()
