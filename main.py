@@ -1,38 +1,58 @@
 import telebot
 import weather
+import users
+import places
 
 bot = telebot.TeleBot('1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8')
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-global_markup.row('Интересные места', 'Обновить геолокацию')
+global_markup.row('Близкие места', 'Обновить мою геолокацию')
 global_markup.row('Погода', 'Курс валют')
+
+
+# current_ind = -1  # индекс пользователя в массиве пользователей
+
+
+def get_geo(message):
+    location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
+    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    markup.row(location_btn)
+    bot.send_message(message.chat.id, 'Включите геоданные', reply_markup=markup)
 
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_message(message.chat.id, 'Привет, ты написал мне /start', reply_markup=global_markup)
-    # print('cur user is', message.chat.id)
+
+    if message.from_user.id not in users.users_list.keys():  # если такого пользователя не существует
+        new_user = users.User()  # создаем нового пользователя
+        users.users_list[message.from_user.id] = new_user
+
+    # print(message.from_user.id)
+    # print(users.users_list)
 
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
+    user = users.users_list[message.from_user.id]
+
     if message.text.lower() == 'привет':
-        bot.send_message(message.chat.id, 'Привет!')
+        bot.send_message(message.chat.id, 'Привет, чем могу тебе помочь?')
     elif message.text.lower() == 'пока':
-        bot.send_message(message.chat.id, 'Пока!')
+        bot.send_message(message.chat.id, 'До связи!')
         # простые сообщения
 
-    elif message.text.lower() == 'обновить геолокацию':
-        print('m', message)
-        location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
-        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        markup.row(location_btn)
-        bot.send_message(message.chat.id, 'Включите геоданные', reply_markup=markup)
+    elif message.text.lower() == 'обновить мою геолокацию':
+        get_geo(message)
         # запрос геоданных
 
-    elif message.text.lower() == 'интересные места':
-        bot.send_message(message.chat.id, 'Эта функция пока не работает:')
-        # bot.send_message(message.chat.id, 'Интересные места в городе Москва:')
+    elif message.text.lower() == 'близкие места':
+        if user.location == {}:  # если локация ещё не записана
+            bot.send_message(message.chat.id, 'Повторите попытку после включения геоданных')
+            get_geo(message)
+        else:
+            count = 3
+            places.get_places(user, bot, message, '', count)
         # интересные места
 
     elif message.text.lower() == 'курс валют':
@@ -57,8 +77,12 @@ def sticker_id(message):
 
 @bot.message_handler(content_types=['location'])
 def handle_loc(message):
+    user = users.users_list[message.from_user.id]
+
     bot.send_message(message.chat.id, 'Мы получили вашу геолокацию', reply_markup=global_markup)
-    # print(message.location)
+    user.location = message.location
+    user.is_have_location = True
+    # print(users.users_list[message.from_user.id].location)
 
 
 bot.polling()
