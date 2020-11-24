@@ -66,6 +66,18 @@ def send_text(message):
         # интересные места
 
     elif message.text.lower() == 'курс валют':
+        markup = types.InlineKeyboardMarkup()
+        item1 = types.InlineKeyboardButton("доллар", callback_data='0')
+        item5 = types.InlineKeyboardButton("резервная валюта мира", callback_data='2')
+        item2 = types.InlineKeyboardButton("евро", callback_data='1')
+        item3 = types.InlineKeyboardButton("английский фунт", callback_data='3')
+        item4 = types.InlineKeyboardButton("швейцарский франк", callback_data='4')
+        markup.add(item1)
+        markup.add(item2)
+        markup.add(item3)
+        markup.add(item4)
+        markup.add(item5)
+        bot.send_message(message.chat.id, 'Какая Валюта нужна?', reply_markup=markup)
         bot.send_message(cid, 'Курс валют на сегодня:')
         arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
         for i in range(5):
