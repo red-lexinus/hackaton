@@ -1,0 +1,3 @@
+pytelegrambotapi
+yandex-weather-api
+requests~=2.25.0
