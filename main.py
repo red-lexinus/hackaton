@@ -3,10 +3,7 @@ from telebot import types
 import weather
 import users
 import places
-<<<<<<< Updated upstream
-=======
 import converter
->>>>>>> Stashed changes
 
 bot = telebot.TeleBot('1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8')
 
