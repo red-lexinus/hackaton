@@ -1,5 +1,6 @@
 import telebot
 import weather
+import users
 
 bot = telebot.TeleBot('1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8')
 
@@ -8,19 +9,29 @@ global_markup.row('Интересные места', 'Обновить геол�
 global_markup.row('Погода', 'Курс валют')
 
 
+# current_ind = -1  # индекс пользователя в массиве пользователей
+
+
 @bot.message_handler(commands=['start'])
 def start_message(message):
     bot.send_message(message.chat.id, 'Привет, ты написал мне /start', reply_markup=global_markup)
-    # print('cur user is', message.chat.id)
+
+    if message.from_user.id not in users.users_list.keys():  # если такого пользователя не существует
+        new_user = users.User()  # создаем нового пользователя
+        users.users_list[message.from_user.id] = new_user
+
+    # print(message.from_user.id)
+    # print(users.users_list)
 
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
     if message.text.lower() == 'привет':
-        bot.send_message(message.chat.id, 'Привет!')
+        bot.send_message(message.chat.id, 'Привет, чем могу тебе помочь?')
     elif message.text.lower() == 'пока':
-        bot.send_message(message.chat.id, 'Пока!')
+        bot.send_message(message.chat.id, 'До связи!')
         # простые сообщения
+
 
     elif message.text.lower() == 'обновить геолокацию':
         print('m', message)
