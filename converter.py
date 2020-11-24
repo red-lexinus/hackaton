@@ -1,9 +1,9 @@
 from pycbrf.toolbox import ExchangeRates
 
 
-def converter(currency=0, date='2020-11-24'):
+def converter_1(currency=0, date='2020-11-25'):
     # USD - доллар EUR - евро XDR - резервная валюта мира
-    # GBP - английс фунт   CHF - шфейцарский франк
+    # GBP - английский фунт   CHF - швейцарский франк
 
     arr = ['USD', 'EUR', 'XDR', 'GBP', 'CHF']
     rates = ExchangeRates(date)
