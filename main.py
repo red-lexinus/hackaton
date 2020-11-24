@@ -1,11 +1,12 @@
 import telebot
 import weather
 import users
+import places
 
 bot = telebot.TeleBot('1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8')
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-global_markup.row('Интересные места', 'Обновить мою геолокацию')
+global_markup.row('Близкие места', 'Обновить мою геолокацию')
 global_markup.row('Погода', 'Курс валют')
 
 
@@ -33,6 +34,8 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
+    user = users.users_list[message.from_user.id]
+
     if message.text.lower() == 'привет':
         bot.send_message(message.chat.id, 'Привет, чем могу тебе помочь?')
     elif message.text.lower() == 'пока':
@@ -43,9 +46,13 @@ def send_text(message):
         get_geo(message)
         # запрос геоданных
 
-    elif message.text.lower() == 'интересные места':
-        bot.send_message(message.chat.id, 'Эта функция пока не работает:')
-        # bot.send_message(message.chat.id, 'Интересные места в городе Москва:')
+    elif message.text.lower() == 'близкие места':
+        if user.location == {}:  # если локация ещё не записана
+            bot.send_message(message.chat.id, 'Повторите попытку после включения геоданных')
+            get_geo(message)
+        else:
+            count = 3
+            places.get_places(user, bot, message, '', count)
         # интересные места
 
     elif message.text.lower() == 'курс валют':
@@ -70,8 +77,11 @@ def sticker_id(message):
 
 @bot.message_handler(content_types=['location'])
 def handle_loc(message):
+    user = users.users_list[message.from_user.id]
+
     bot.send_message(message.chat.id, 'Мы получили вашу геолокацию', reply_markup=global_markup)
-    users.users_list[message.from_user.id].location = message.location
+    user.location = message.location
+    user.is_have_location = True
     # print(users.users_list[message.from_user.id].location)
 
 

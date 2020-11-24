@@ -1,7 +1,9 @@
 
 class User:  # класс пользователь
-    def __init__(self, location=dict()):
-        self.location = location
+    def __init__(self):
+        self.location = dict()
+        self.is_have_location = False
+        self.places_starts_at = 0
 
 
 users_list = dict()  # список всех пользователей
