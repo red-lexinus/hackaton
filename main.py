@@ -61,7 +61,7 @@ def send_text(message):
         # курс валют
 
     elif message.text.lower() == 'погода':
-        bot.send_message(message.chat.id, ''.join(weather.get_weather()))  # погода из файла weather.py
+        weather.get_weather(user, bot, message)  # погода из файла weather.py
         # погода
 
     else:
