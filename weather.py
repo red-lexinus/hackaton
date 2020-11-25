@@ -84,3 +84,11 @@ def weekly_weather(user, bot, message):
     pass
 
 
+def get_temp(user):
+    res = requests.get("http://api.openweathermap.org/data/2.5/find",
+                       params={'lat': user.location.latitude, 'lon': user.location.longitude,
+                               'units': 'metric', 'lang': 'ru', 'APPID': weather_api})
+    data = res.json()
+    weather = data['list'][0]
+
+    return weather["main"]["temp"]

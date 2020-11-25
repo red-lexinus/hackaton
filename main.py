@@ -5,9 +5,9 @@ import users
 import places
 import converter
 
-# API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
+API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
 # API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM' # доп сервер для проверки
-API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
+# API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
 bot = telebot.TeleBot(API_KEY)
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -105,8 +105,6 @@ def send_text(message):
         bot.send_message(cid,
                          'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
 
-
-    #--------------------------------------------
     elif message.text.lower() == 'погода':
         if user.location == {}:  # если локация ещё не записана
             bot.send_message(cid, 'Повторите попытку после включения геоданных')
@@ -121,7 +119,6 @@ def send_text(message):
 
         # погода
 
-    # --------------------------------------------
     elif message.text.lower() == 'пройти опрос':
         markup = types.InlineKeyboardMarkup()
         item1 = types.InlineKeyboardButton("Да", callback_data='опрос_000')
@@ -186,7 +183,6 @@ def callback_inline(call):
                 weather.detailed_weather(user, bot, call.message)
             if int(call.data) == 2:
                 weather.weekly_weather(user, bot, call.message)
-
 
         elif 'опрос_00' == call.data[:-1]:
             num = int(call.data[-2:])
@@ -280,11 +276,6 @@ def callback_inline(call):
             markup.add(item1, item2, item3)
             bot.send_message(cid,
                              'Сколько ещё записей надо вывести?', reply_markup=markup)
-
-
-
-
-
 
     except:
         pass
