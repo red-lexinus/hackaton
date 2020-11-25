@@ -179,18 +179,22 @@ def callback_inline(call):
                                                                                       converter.converter_1(
                                                                                           int(call.data[-1]))),
                              parse_mode='Markdown')
-        elif call.data == 'test_1121' or call.message.text == 'Хотите посмотреть ещё??':
+        elif call.data == 'test_1121':
             number = random.randint(0, user.setting[5])
+
             x, y = 0, 0
-            for i in user:
+            for i in user.setting:
                 if i >= number and x == 0:
                     x = y
                 y += 1
+
             arc = {0: 5, 1: 5, 2: 2, 3: 1, 4: 4, 5: 3}
+
             places.get_places(user, bot, call.message, arc[x], 2)
             markup = types.InlineKeyboardMarkup()
-            markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data=call.data))
+            markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data='test_1121'))
             bot.send_message(cid, 'Хотите посмотреть ещё??', reply_markup=markup)
+
         elif call.message.text == 'Какие места найти?':
             send_places(call, user, cid)
         elif call.message.text == 'Хотите посмотреть ещё?':
@@ -301,9 +305,6 @@ def callback_inline(call):
             users.save_users()
             bot.send_message(cid,
                              'Спасибо за пройденный тест, теперь вы можете использовать поиск учитывая ваши приоритеты')
-            print(user.setting)
-            print(user.flag)
-            print(user.min_temp)
 
     except:
         pass
