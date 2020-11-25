@@ -27,8 +27,8 @@ def get_places(user, bot, message, choice=0, lim=5):
         query=query,
         locale='ru'
     )
-    resp = requests.get(url=url, params=params)
-    data = json.loads(resp.text)['response']
+    req = requests.get(url=url, params=params)
+    data = json.loads(req.text)['response']
 
     user.places_count[choice] = data["totalResults"]
 
@@ -61,4 +61,36 @@ def get_places(user, bot, message, choice=0, lim=5):
     users.save_users()
 
 
+def get_all_places(user):
+    all_queries = ['', 'ресторан', 'музей', 'парк', 'кино', 'магазин']  # '' - все места
+
+    for query in all_queries:
+        params = dict(
+            client_id='2LT5KTOBNMCSHSNDC51KL5CPYOADWAL4GKUH1GNMIA2WF23S',
+            client_secret='RCOAJRQUS2XEK3FK2TIWIZVIETYKEWQQWWPFLPLAXZT45XBA',
+            v='20201125',
+            ll='{},{}'.format(user.location.latitude, user.location.longitude),
+            query=query,
+            locale='ru'
+        )
+
+        req = requests.get(url=url, params=params)
+        data = json.loads(req.text)['response']
+
+        places = data['groups'][0]['items']
+
+        if query == '':
+            user.all_places = places
+        if query == 'ресторан':
+            user.food = places
+        if query == 'музей':
+            user.museums = places
+        if query == 'парк':
+            user.parks = places
+        if query == 'кино':
+            user.cinemas = places
+        if query == 'магазин':
+            user.shops = places
+
+        users.save_users()
 

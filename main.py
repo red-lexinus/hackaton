@@ -139,6 +139,7 @@ def handle_loc(message):
     bot.send_message(cid, 'Мы получили вашу геолокацию', reply_markup=global_markup)
     user.location = message.location
     user.is_have_location = True
+    places.get_all_places(user)
     users.save_users()
 
 
@@ -147,7 +148,6 @@ def send_places(call, user, cid):
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data=call.data))
     bot.send_message(cid, 'Хотите посмотреть ещё?', reply_markup=markup)
-
 
 
 @bot.callback_query_handler(func=lambda call: True)
