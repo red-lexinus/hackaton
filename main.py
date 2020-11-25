@@ -57,9 +57,20 @@ def send_text(message):
             bot.send_message(cid, 'Повторите попытку после включения геоданных')
             get_geo(message)
         else:
-            count = 3
-            places.get_places(user, bot, message, '', count)
+            # count = 3
+            # places.get_places(user, bot, message, '', count)
         # интересные места
+
+            markup = types.InlineKeyboardMarkup()
+            markup.add(types.InlineKeyboardButton("Все места поблизости", callback_data='0'))
+            markup.add(types.InlineKeyboardButton("Рестораны", callback_data='1'))
+            markup.add(types.InlineKeyboardButton("Кафе", callback_data='2'))
+            markup.add(types.InlineKeyboardButton("Музеи", callback_data='3'))
+            markup.add(types.InlineKeyboardButton("Парки", callback_data='4'))
+            markup.add(types.InlineKeyboardButton("Магазины", callback_data='5'))
+
+            bot.send_message(cid, 'Какие места найти?', reply_markup=markup)
+
 
     elif message.text.lower() == 'курс валют':
         markup = types.InlineKeyboardMarkup()
@@ -104,7 +115,7 @@ def handle_loc(message):
     uid = message.from_user.id
     user = users.users_list[uid]
 
-    bot.send_message(message.chat.id, 'Мы получили вашу геолокацию', reply_markup=global_markup)
+    bot.send_message(cid, 'Мы получили вашу геолокацию', reply_markup=global_markup)
     user.location = message.location
     user.is_have_location = True
     # print(users.users_list[message.from_user.id].location)
@@ -113,12 +124,30 @@ def handle_loc(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     cid = call.message.chat.id
+    uid = call.from_user.id
+    user = users.users_list[uid]
     try:
-        if call.message:
+        if call.message.text == 'Какая Валюта нужна?':
+            # if call.data[:-2] == 'currency'
             arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
-            bot.send_message(cid, 'Курс валюты {} на сегодня\n*{:.2f}* рублей'.format(arr_valua[int(call.data)],
-                                                                            converter.converter_1(int(call.data))),
+            bot.send_message(cid, 'Курс валюты {} на сегодня\n*{:.2f}* рублей'.format(arr_valua[int(call.data[-1])],
+                                                                            converter.converter_1(int(call.data[-1]))),
                                                                             parse_mode='Markdown')
+        elif call.message.text == 'Какие места найти?':
+            query = ''
+            if int(call.data) == 1:
+                query = 'ресторан'
+            elif int(call.data) == 2:
+                query = 'кафе'
+            elif int(call.data) == 3:
+                query = 'музей'
+            elif int(call.data) == 4:
+                query = 'парк'
+            elif int(call.data) == 5:
+                query = 'магазин'
+
+            places.get_places(user, bot, call.message, query, 3)
+
     except:
         pass
 
