@@ -32,6 +32,10 @@ def get_places(user, bot, message, choice=0, lim=5):
 
     user.places_count[choice] = data["totalResults"]
 
+    if data["totalResults"] == 0:
+        bot.send_message(message.chat.id, 'Мест не найдено')
+        return 0
+
     how_many_show = lim if user.saw_counter[choice] + lim < user.places_count[choice] \
         else user.places_count[choice] - user.saw_counter[choice]
 
@@ -59,6 +63,7 @@ def get_places(user, bot, message, choice=0, lim=5):
         user.saw_counter[choice] = 0
 
     users.save_users()
+    return 1
 
 
 def get_all_places(user):
@@ -71,7 +76,8 @@ def get_all_places(user):
             v='20201125',
             ll='{},{}'.format(user.location.latitude, user.location.longitude),
             query=query,
-            locale='ru'
+            locale='ru',
+            limit=15
         )
 
         req = requests.get(url=url, params=params)

@@ -20,14 +20,28 @@ arr_answer = {'опрос_00': 4, 'опрос_01': 4, 'опрос_02': 4, 'оп�
 secreat_txt, query = '', ''
 
 
-def get_geo(message):
-    cid = message.chat.id
-    location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
-    cancel_btn = telebot.types.KeyboardButton('Отмена')
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    markup.row(location_btn, cancel_btn)
+def get_geo(cid, var):
+    if var == 0:
+        location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
+        cancel_btn = telebot.types.KeyboardButton('Отмена')
+        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        markup.row(cancel_btn, location_btn)
 
-    bot.send_message(cid, 'Включите геоданные', reply_markup=markup)
+        bot.send_message(cid, 'Включите геоданные', reply_markup=markup)
+    elif var == 1:
+        cancel_btn = telebot.types.KeyboardButton('Отмена')
+        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        markup.row(cancel_btn)
+
+        bot.send_message(cid, 'Отправьте геопозицию через вложение', reply_markup=markup)
+
+
+def ask_for_geo(cid):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Использовать геоданные устройства", callback_data='0'))
+    markup.add(types.InlineKeyboardButton("Выбрать геопозицию", callback_data='1'))
+
+    bot.send_message(cid, 'Как обновить геолокацию?', reply_markup=markup)
 
 
 def check_user(message):
@@ -61,13 +75,13 @@ def send_text(message):
         # простые сообщения
 
     elif message.text.lower() == 'обновить мою геолокацию':
-        get_geo(message)
+        ask_for_geo(cid)
         # запрос геоданных
 
     elif message.text.lower() == 'куда сходить':
         if user.location == {}:  # если локация ещё не записана
-            bot.send_message(cid, 'Повторите попытку после включения геоданных')
-            get_geo(message)
+            bot.send_message(cid, 'Повторите попытку после отправки геолокации')
+            ask_for_geo(cid)
         else:
             # count = 3
             # places.get_places(user, bot, message, '', count)
@@ -107,15 +121,15 @@ def send_text(message):
 
     elif message.text.lower() == 'погода':
         if user.location == {}:  # если локация ещё не записана
-            bot.send_message(cid, 'Повторите попытку после включения геоданных')
-            get_geo(message)
+            bot.send_message(cid, 'Повторите попытку после отправки геолокации')
+            ask_for_geo(cid)
         else:
             markup = types.InlineKeyboardMarkup()
             markup.add(types.InlineKeyboardButton("Погода сейчас", callback_data='0'))
             markup.add(types.InlineKeyboardButton("Подробная погода", callback_data='1'))
             markup.add(types.InlineKeyboardButton("Прогноз на 3 дня", callback_data='2'))
 
-            bot.send_message(cid, 'Выберите подходящий вариант', reply_markup=markup)
+            bot.send_message(cid, 'Выберите вариант погоды', reply_markup=markup)
 
         # погода
 
@@ -147,18 +161,27 @@ def handle_loc(message):
     uid = message.from_user.id
     user = users.get_user(uid)
 
-    bot.send_message(cid, 'Мы получили вашу геолокацию', reply_markup=global_markup)
+    bot.send_message(cid, 'Мы получили геолокацию', reply_markup=global_markup)
     user.location = message.location
     user.is_have_location = True
-    places.get_all_places(user)
     users.save_users()
+
+    try:
+        places.get_all_places(user)
+        users.save_users()
+        # баг - файл users.dat слишком сильно заполняется и возникает ошибка
+        # потом постараюсь исправить, сделал так чтобы работал имеющийся функционал
+    except:
+        print('error')
+        pass
 
 
 def send_places(call, user, cid):
-    places.get_places(user, bot, call.message, int(call.data), 2)
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data=call.data))
-    bot.send_message(cid, 'Хотите посмотреть ещё?', reply_markup=markup)
+    result = places.get_places(user, bot, call.message, int(call.data), 2)
+    if result != 0:
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data=call.data))
+        bot.send_message(cid, 'Хотите посмотреть ещё?', reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -179,7 +202,7 @@ def callback_inline(call):
             send_places(call, user, cid)
         elif call.message.text == 'Хотите посмотреть ещё?':
             send_places(call, user, cid)
-        elif call.message.text == 'Выберите подходящий вариант':
+        elif call.message.text == 'Выберите вариант погоды':
             # weather.get_weather(user, bot, message)
             if int(call.data) == 0:
                 weather.simple_weather(user, bot, call.message)
@@ -187,6 +210,9 @@ def callback_inline(call):
                 weather.detailed_weather(user, bot, call.message)
             if int(call.data) == 2:
                 weather.three_days_weather(user, bot, call.message)
+
+        elif call.message.text == 'Как обновить геолокацию?':
+            get_geo(cid, int(call.data))
 
         elif 'опрос_00' == call.data[:-1]:
             num = int(call.data[-2:])
@@ -201,7 +227,6 @@ def callback_inline(call):
             markup.add(item5, item2)
             bot.send_message(cid,
                              'Скажите вам нравится спонтанно посещать театры и кино?', reply_markup=markup)
-
         elif 'опрос_01' == call.data[:-1]:
 
             num = int(call.data[-2:])
@@ -246,7 +271,6 @@ def callback_inline(call):
             markup.add(item5, item2)
             bot.send_message(cid,
                              'ходите ли вы в неизвестные вам рестораны?', reply_markup=markup)
-
         elif 'опрос_04' == call.data[:-1]:
             num = int(call.data[-2:])
             arr_answer[call.data[0:-1]] = num
