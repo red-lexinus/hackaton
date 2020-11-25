@@ -3,3 +3,4 @@ yandex-weather-api
 requests~=2.25.0
 
 pycbrf~=0.4.0
+
