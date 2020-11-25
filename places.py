@@ -2,7 +2,6 @@ import json
 import requests
 import users
 
-
 url = 'https://api.foursquare.com/v2/venues/explore'
 
 
@@ -93,4 +92,3 @@ def get_all_places(user):
             user.shops = places
 
         users.save_users()
-

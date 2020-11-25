@@ -3,10 +3,11 @@ from telebot import types
 import weather
 import users
 import places
+import random
 import converter
 
-API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
-# API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM' # доп сервер для проверки
+# API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
+API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'  # доп сервер для проверки
 # API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
 bot = telebot.TeleBot(API_KEY)
 
@@ -40,7 +41,7 @@ def check_user(message):
 def start_message(message):
     cid = message.chat.id
     check_user(message)
-    bot.send_message(cid, 'Привет, ты написал мне /start', reply_markup=global_markup)
+    bot.send_message(cid, 'Здравствуй любопытный человек)', reply_markup=global_markup)
 
 
 @bot.message_handler(content_types=['text'])
@@ -72,6 +73,7 @@ def send_text(message):
             # count = 3
             # places.get_places(user, bot, message, '', count)
             # интересные места
+            item7 = types.InlineKeyboardButton("Интересные места, для вас", callback_data='6')
 
             item1 = types.InlineKeyboardButton("Все места поблизости", callback_data='0')
             item2 = types.InlineKeyboardButton("Рестораны и кафе", callback_data='1')
@@ -81,6 +83,7 @@ def send_text(message):
             item6 = types.InlineKeyboardButton("Магазины", callback_data='5')
 
             markup = types.InlineKeyboardMarkup()
+            markup.row(item7)
             markup.row(item1)
             markup.row(item2)
             markup.row(item3, item4)
@@ -164,8 +167,12 @@ def callback_inline(call):
                                                                                       converter.converter_1(
                                                                                           int(call.data[-1]))),
                              parse_mode='Markdown')
+        elif call.data == '6' and call.message.text == 'Какие места найти?':
+            places.get_all_places(user)
+
         elif call.message.text == 'Какие места найти?':
             send_places(call, user, cid)
+
         elif call.message.text == 'Хотите посмотреть ещё?':
             send_places(call, user, cid)
 
@@ -181,7 +188,7 @@ def callback_inline(call):
             markup.add(item1, item3)
             markup.add(item5, item2)
             bot.send_message(cid,
-                             'Скажите вам нравится спонтанно посещать театры и кино?', reply_markup=markup)
+                             'Скажите вам нравится спонтанно посещать театры?', reply_markup=markup)
 
         elif 'опрос_01' == call.data[:-1]:
 
@@ -210,8 +217,7 @@ def callback_inline(call):
             markup.add(item1, item3)
             markup.add(item5, item2)
             bot.send_message(cid,
-                             'хотите ли вы для разнообразия посмотреть на гостиницы'
-                             ' и снова начать завидовать кому-нибудь?',
+                             'Скажите вам нравится спонтанно посещать кинотетры?',
                              reply_markup=markup)
         elif 'опрос_03' == call.data[:-1]:
             num = int(call.data[-2:])
@@ -252,6 +258,8 @@ def callback_inline(call):
             bot.send_message(cid,
                              'Спасибо за пройденный тест, возможно на данный момент наш бот не'
                              ' способен искать места по вашим интересам, но скоро это точно изменится)')
+            user.add_setting(arr_answer)
+            user.save_users()
         elif 'вернуть ещё' == call.data[:-1]:
             places.get_places(user, bot, call.message, query, int(call.data[-1]))
             markup = types.InlineKeyboardMarkup()

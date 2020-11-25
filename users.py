@@ -18,8 +18,41 @@ class User:  # класс пользователь
         self.cinemas = []
         self.shops = []
 
+    def new_arr(self):
+        new_arr = []
+        for d in self.food:
+            dict_new = d['venue']
+            dict_new['id_event'] = 'опрос_04'
+            new_arr.append(dict_new)
+        for d in self.museums:
+            dict_new = d['venue']
+            dict_new['id_event'] = 'опрос_01'
+            new_arr.append(dict_new)
+        for d in self.parks:
+            dict_new = d['venue']
+            dict_new['id_event'] = 'опрос_02'
+            # dict_new['random'] = random.random()
+            new_arr.append(dict_new)
+        for d in self.cinemas:
+            dict_new = d['venue']
+            dict_new['id_event'] = 'опрос_03'
+            # dict_new['random'] = random.random()
+            new_arr.append(dict_new)
+        for d in self.shops:
+            dict_new = d['venue']
+            dict_new['id_event'] = 'опрос_00'
+            # dict_new['random'] = random.random()
+            new_arr.append(dict_new)
+        new_arr = sorted(new_arr, key=lambda new_arr: new_arr['distance'])
+        print(new_arr)
+
+    def add_setting(self, arr):
+        self.opros = arr
+
 
 users_list = dict()  # список всех пользователей
+
+
 # ключ - id пользователя, значение - класс с информацией о пользователе
 
 
