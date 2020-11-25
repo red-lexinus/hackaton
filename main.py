@@ -6,8 +6,8 @@ import places
 import converter
 import random
 
-# API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
-API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'  # доп сервер для проверки
+API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
+#API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'  # доп сервер для проверки
 # API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
 bot = telebot.TeleBot(API_KEY)
 
