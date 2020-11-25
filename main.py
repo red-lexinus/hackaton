@@ -10,6 +10,7 @@ bot = telebot.TeleBot('1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8')
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
 global_markup.row('Близкие места', 'Обновить мою геолокацию')
 global_markup.row('Погода', 'Курс валют')
+global_markup.row('Пройти Опрос')
 
 
 # current_ind = -1  # индекс пользователя в массиве пользователей
