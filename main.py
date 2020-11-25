@@ -95,7 +95,8 @@ def send_text(message):
         markup.add(item5)
         bot.send_message(message.chat.id, 'Какая Валюта нужна?', reply_markup=markup)
         bot.send_message(cid,
-                         'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
+                         'Полная информация находится на сайте '
+                         'https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
 
     elif message.text.lower() == 'погода':
         if user.location == {}:  # если локация ещё не записана
@@ -104,59 +105,6 @@ def send_text(message):
         else:
             weather.get_weather(user, bot, message)
         # погода
-
-    if secreat_txt == 'опрос_00':
-        secreat_txt = ''
-        bot.send_message(cid,
-                         'Спасибо за ответ')
-        markup = types.InlineKeyboardMarkup()
-        item1 = types.InlineKeyboardButton("Да", callback_data='опрос_000')
-        item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_001')
-        item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_002')
-        item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_003')
-        markup.add(item1, item3)
-        markup.add(item5, item2)
-        bot.send_message(cid,
-                         'Скажите вам нравится спонтанно посещать театры и кино?', reply_markup=markup)
-
-        secreat_txt = ''
-
-
-
-    else:
-        if secreat_txt == 'опрос_00':
-            secreat_txt = ''
-            bot.send_message(cid,
-                             'Спасибо за ответ')
-            markup = types.InlineKeyboardMarkup()
-            item1 = types.InlineKeyboardButton("Да", callback_data='опрос_000')
-            item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_001')
-            item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_002')
-            item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_003')
-            markup.add(item1, item3)
-            markup.add(item5, item2)
-            bot.send_message(cid,
-                             'Скажите вам нравится спонтанно посещать театры и кино?', reply_markup=markup)
-
-            secreat_txt = ''
-        elif secreat_txt == 'опрос_01':
-            secreat_txt = ''
-            bot.send_message(cid,
-                             'Спасибо за ответ')
-            markup = types.InlineKeyboardMarkup()
-            item1 = types.InlineKeyboardButton("Да", callback_data='опрос_020')
-            item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_021')
-            item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_022')
-            item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_023')
-            markup.add(item1, item3)
-            markup.add(item5, item2)
-            bot.send_message(cid,
-                             'Хотите ли вы гулять в парках?', reply_markup=markup)
-
-            secreat_txt = ''
-        else:
-            bot.send_message(cid, 'Я не знаю, что ответить')
-        # ответ на неизвестные сообщения
 
 
 @bot.message_handler(content_types=['sticker'])
@@ -197,8 +145,8 @@ def callback_inline(call):
 
                 markup = types.InlineKeyboardMarkup()
                 item1 = types.InlineKeyboardButton("Да", callback_data='опрос_010')
-                item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_011')
-                item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_012')
+                item5 = types.InlineKeyboardButton("Иногда хочется", callback_data='опрос_011')
+                item2 = types.InlineKeyboardButton("почти никода", callback_data='опрос_012')
                 item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_013')
                 markup.add(item1, item3)
                 markup.add(item5, item2)
@@ -227,13 +175,14 @@ def callback_inline(call):
 
                 markup = types.InlineKeyboardMarkup()
                 item1 = types.InlineKeyboardButton("Да", callback_data='опрос_030')
-                item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_031')
-                item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_032')
+                item5 = types.InlineKeyboardButton("Иногда хочу)", callback_data='опрос_031')
+                item2 = types.InlineKeyboardButton("почти всегда не хочется", callback_data='опрос_032')
                 item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_033')
                 markup.add(item1, item3)
                 markup.add(item5, item2)
                 bot.send_message(cid,
-                                 'хотите ли вы для разнообразия посмотреть на гостиницы и снова начть завидовать?',
+                                 'хотите ли вы для разнообразия посмотреть на гостиницы'
+                                 ' и снова начать завидовать кому-нибудь?',
                                  reply_markup=markup)
             elif 'опрос_03' == call.data[:-1]:
                 num = int(call.data[-2:])
