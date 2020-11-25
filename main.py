@@ -78,12 +78,6 @@ def send_text(message):
         markup.add(item4)
         markup.add(item5)
         bot.send_message(message.chat.id, 'Какая Валюта нужна?', reply_markup=markup)
-        bot.send_message(cid, 'Курс валют на сегодня:')
-        arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
-        for i in range(5):
-            bot.send_message(message.chat.id, '{} : {} рублей'.format(arr_valua[i], converter.converter_1(i)))
-        bot.send_message(message.chat.id,
-                         'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
 
     elif message.text.lower() == 'погода':
         if user.location == {}:  # если локация ещё не записана
@@ -112,6 +106,20 @@ def handle_loc(message):
     user.location = message.location
     user.is_have_location = True
     # print(users.users_list[message.from_user.id].location)
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_inline(call):
+    try:
+        if call.message:
+            arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
+            bot.send_message(call.message.chat.id, 'официальный курс валюты {} на сегодня: {}'.format(arr_valua[int(call.data)],
+                                                                                           converter.converter_1(
+                                                                                               int(call.data))))
+            bot.send_message(call.chat.id,
+                             'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
+    except:
+        pass
 
 
 bot.polling()
