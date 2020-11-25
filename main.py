@@ -60,17 +60,18 @@ def send_text(message):
 
     elif message.text.lower() == 'курс валют':
         markup = types.InlineKeyboardMarkup()
-        item1 = types.InlineKeyboardButton("доллар", callback_data='0')
-        item5 = types.InlineKeyboardButton("резервная валюта мира", callback_data='2')
-        item2 = types.InlineKeyboardButton("евро", callback_data='1')
-        item3 = types.InlineKeyboardButton("английский фунт", callback_data='3')
-        item4 = types.InlineKeyboardButton("швейцарский франк", callback_data='4')
+        item1 = types.InlineKeyboardButton("Доллар 💲", callback_data='0')
+        item5 = types.InlineKeyboardButton("Резервная валюта мира", callback_data='2')
+        item2 = types.InlineKeyboardButton("Евро 🇪🇺", callback_data='1')
+        item3 = types.InlineKeyboardButton("Английский фунт 💷", callback_data='3')
+        item4 = types.InlineKeyboardButton("Швейцарский франк 🇨🇭", callback_data='4')
         markup.add(item1)
         markup.add(item2)
         markup.add(item3)
         markup.add(item4)
         markup.add(item5)
-        bot.send_message(message.chat.id, 'Какая Валюта нужна?', reply_markup=markup)
+
+        bot.send_message(cid, 'Какая Валюта нужна?', reply_markup=markup)
         bot.send_message(cid,
                          'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
 
@@ -108,12 +109,13 @@ def handle_loc(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
+    cid = call.message.chat.id
     try:
         if call.message:
             arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
-            bot.send_message(call.message.chat.id, 'официальный курс валюты {} на сегодня: {}'.format(arr_valua[int(call.data)],
-                                                                                           converter.converter_1(
-                                                                                               int(call.data))))
+            bot.send_message(cid, 'Курс валюты {} на сегодня\n*{:.2f}* рублей'.format(arr_valua[int(call.data)],
+                                                                            converter.converter_1(int(call.data))),
+                                                                            parse_mode='Markdown')
     except:
         pass
 
