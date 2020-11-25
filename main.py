@@ -5,7 +5,7 @@ import users
 import places
 import converter
 
-API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'
+API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'
 bot = telebot.TeleBot(API_KEY)
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
