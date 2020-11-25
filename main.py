@@ -5,16 +5,20 @@ import users
 import places
 import converter
 
-bot = telebot.TeleBot('1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8')
+bot = telebot.TeleBot('1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM')
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
 global_markup.row('Близкие места', 'Обновить мою геолокацию')
 global_markup.row('Погода', 'Курс валют')
 global_markup.row('Пройти Опрос')
 
+arr_answer = {'опрос_000': 4, 'опрос_001': 4, 'опрос_002': 4, 'опрос_003': 4, 'опрос_010': 4, 'опрос_011': 4,
+              'опрос_012': 4, 'опрос_013': 4, }
+
+secreat_txt = ''
+
 
 # current_ind = -1  # индекс пользователя в массиве пользователей
-
 
 def get_geo(message):
     location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
@@ -37,6 +41,7 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
+    global secreat_txt
     try:
         cid = message.chat.id
         user = users.users_list[cid]
@@ -49,6 +54,17 @@ def send_text(message):
 
     if message.text.lower() == 'привет':
         bot.send_message(cid, 'Привет, чем могу тебе помочь?')
+    elif message.text.lower() == 'пройти опрос':
+        markup = types.InlineKeyboardMarkup()
+        item1 = types.InlineKeyboardButton("Да", callback_data='опрос_000')
+        item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_001')
+        item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_002')
+        item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_003')
+        markup.add(item1, item3)
+        markup.add(item5, item2)
+        bot.send_message(message.chat.id, 'Вам нравится без особого повода ходить по магазинам?', reply_markup=markup)
+
+
     elif message.text.lower() == 'пока':
         bot.send_message(cid, 'До связи!')
         # простые сообщения
@@ -79,6 +95,8 @@ def send_text(message):
         markup.add(item4)
         markup.add(item5)
         bot.send_message(message.chat.id, 'Какая Валюта нужна?', reply_markup=markup)
+        bot.send_message(cid,
+                         'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
 
     elif message.text.lower() == 'погода':
         if user.location == {}:  # если локация ещё не записана
@@ -87,6 +105,24 @@ def send_text(message):
         else:
             weather.get_weather(user, bot, message)
         # погода
+
+    elif secreat_txt == 'опрос_00':
+        secreat_txt = ''
+        bot.send_message(cid,
+                         'Спасибо за ответ')
+        markup = types.InlineKeyboardMarkup()
+        item1 = types.InlineKeyboardButton("Да", callback_data='опрос_000')
+        item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_001')
+        item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_002')
+        item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_003')
+        markup.add(item1, item3)
+        markup.add(item5, item2)
+        bot.send_message(cid,
+                         'Скажите вам нравится спонтанно посещать театры и кино?', reply_markup=markup)
+
+        secreat_txt = ''
+
+
 
     else:
         bot.send_message(cid, 'Я не знаю, что ответить')
@@ -113,12 +149,24 @@ def handle_loc(message):
 def callback_inline(call):
     try:
         if call.message:
-            arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
-            bot.send_message(call.message.chat.id, 'официальный курс валюты {} на сегодня: {}'.format(arr_valua[int(call.data)],
-                                                                                           converter.converter_1(
-                                                                                               int(call.data))))
-            bot.send_message(call.chat.id,
-                             'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
+            if len(call.data) == 1:
+                arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
+                bot.send_message(call.message.chat.id,
+                                 'официальный курс валюты {} на сегодня: {}'.format(arr_valua[int(call.data)],
+                                                                                    converter.converter_1(
+                                                                                        int(call.data))))
+                bot.send_message(call.chat.id,
+                                 'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
+            elif 'опрос_00' in call.data:
+                global  secreat_txt
+                num = int(call.data[-2:])
+                arr_answer[call.data[0:-1]] = num
+                print(arr_answer)
+                secreat_txt = call.data[0:-1]
+
+
+
+
     except:
         pass
 
