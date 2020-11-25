@@ -171,10 +171,10 @@ def callback_inline(call):
         if call.message.text == 'Какая Валюта нужна?':
             # if call.data[:-2] == 'currency'
             arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
-            bot.send_message(cid, 'Курс валюты {} на сегодня\n*{:.2f}* рублей'.format(arr_valua[int(call.data[-1])],
-                                                                                      converter.converter_1(
-                                                                                          int(call.data[-1]))),
-                             parse_mode='Markdown')
+            bot.send_message(cid, 'Курс валюты _{}_ \n*{:.2f}* рублей'.format(arr_valua[int(call.data[-1])],
+                                                                                    converter.converter_1(
+                                                                                    int(call.data[-1]))),
+                                                                                    parse_mode='Markdown')
         elif call.message.text == 'Какие места найти?':
             send_places(call, user, cid)
         elif call.message.text == 'Хотите посмотреть ещё?':
@@ -195,7 +195,7 @@ def callback_inline(call):
             markup = types.InlineKeyboardMarkup()
             item1 = types.InlineKeyboardButton("Да", callback_data='опрос_010')
             item5 = types.InlineKeyboardButton("Иногда хочется", callback_data='опрос_011')
-            item2 = types.InlineKeyboardButton("почти никода", callback_data='опрос_012')
+            item2 = types.InlineKeyboardButton("Почти никода", callback_data='опрос_012')
             item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_013')
             markup.add(item1, item3)
             markup.add(item5, item2)
@@ -210,7 +210,7 @@ def callback_inline(call):
             markup = types.InlineKeyboardMarkup()
             item1 = types.InlineKeyboardButton("Да", callback_data='опрос_020')
             item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_021')
-            item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_022')
+            item2 = types.InlineKeyboardButton("Почти никогда", callback_data='опрос_022')
             item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_023')
             markup.add(item1, item3)
             markup.add(item5, item2)
@@ -224,7 +224,7 @@ def callback_inline(call):
             markup = types.InlineKeyboardMarkup()
             item1 = types.InlineKeyboardButton("Да", callback_data='опрос_030')
             item5 = types.InlineKeyboardButton("Иногда хочу)", callback_data='опрос_031')
-            item2 = types.InlineKeyboardButton("почти всегда не хочется", callback_data='опрос_032')
+            item2 = types.InlineKeyboardButton("Почти всегда не хочется", callback_data='опрос_032')
             item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_033')
             markup.add(item1, item3)
             markup.add(item5, item2)
@@ -240,7 +240,7 @@ def callback_inline(call):
             markup = types.InlineKeyboardMarkup()
             item1 = types.InlineKeyboardButton("Да", callback_data='опрос_040')
             item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_041')
-            item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_042')
+            item2 = types.InlineKeyboardButton("Почти никогда", callback_data='опрос_042')
             item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_043')
             markup.add(item1, item3)
             markup.add(item5, item2)
