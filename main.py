@@ -5,9 +5,9 @@ import users
 import places
 import converter
 
-API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
+# API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
 # API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM' # доп сервер для проверки
-# API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
+API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
 bot = telebot.TeleBot(API_KEY)
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -105,13 +105,23 @@ def send_text(message):
         bot.send_message(cid,
                          'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
 
+
+    #--------------------------------------------
     elif message.text.lower() == 'погода':
         if user.location == {}:  # если локация ещё не записана
             bot.send_message(cid, 'Повторите попытку после включения геоданных')
             get_geo(message)
         else:
-            weather.get_weather(user, bot, message)
+            markup = types.InlineKeyboardMarkup()
+            markup.add(types.InlineKeyboardButton("Погода сейчас", callback_data='0'))
+            markup.add(types.InlineKeyboardButton("Подробная погода", callback_data='1'))
+            # markup.add(types.InlineKeyboardButton("Прогноз на 5 дней", callback_data='2'))
+
+            bot.send_message(message.chat.id, 'Выберите подходящий вариант', reply_markup=markup)
+
         # погода
+
+    # --------------------------------------------
     elif message.text.lower() == 'пройти опрос':
         markup = types.InlineKeyboardMarkup()
         item1 = types.InlineKeyboardButton("Да", callback_data='опрос_000')
@@ -168,6 +178,15 @@ def callback_inline(call):
             send_places(call, user, cid)
         elif call.message.text == 'Хотите посмотреть ещё?':
             send_places(call, user, cid)
+        elif call.message.text == 'Выберите подходящий вариант':
+            # weather.get_weather(user, bot, message)
+            if int(call.data) == 0:
+                weather.simple_weather(user, bot, call.message)
+            if int(call.data) == 1:
+                weather.detailed_weather(user, bot, call.message)
+            if int(call.data) == 2:
+                weather.weekly_weather(user, bot, call.message)
+
 
         elif 'опрос_00' == call.data[:-1]:
             num = int(call.data[-2:])
