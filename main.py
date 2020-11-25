@@ -78,6 +78,8 @@ def send_text(message):
         markup.add(item4)
         markup.add(item5)
         bot.send_message(message.chat.id, 'Какая Валюта нужна?', reply_markup=markup)
+        bot.send_message(cid,
+                         'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
 
     elif message.text.lower() == 'погода':
         if user.location == {}:  # если локация ещё не записана
@@ -116,8 +118,6 @@ def callback_inline(call):
             bot.send_message(call.message.chat.id, 'официальный курс валюты {} на сегодня: {}'.format(arr_valua[int(call.data)],
                                                                                            converter.converter_1(
                                                                                                int(call.data))))
-            bot.send_message(call.chat.id,
-                             'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
     except:
         pass
 
