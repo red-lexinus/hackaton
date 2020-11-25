@@ -5,37 +5,42 @@ import users
 import places
 import converter
 
-# API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8' - сервер главный
-# API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM' - доп сервер для проверки
-API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'
+API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
+# API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM' # доп сервер для проверки
+# API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
 bot = telebot.TeleBot(API_KEY)
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-global_markup.row('Близкие места', 'Обновить мою геолокацию')
+global_markup.row('Куда сходить', 'Обновить мою геолокацию')
 global_markup.row('Погода', 'Курс валют')
 global_markup.row('Пройти Опрос')
+
 arr_answer = {'опрос_00': 4, 'опрос_01': 4, 'опрос_02': 4, 'опрос_03': 4, 'опрос_04': 4, }
+
 secreat_txt, query = '', ''
 
 
 def get_geo(message):
+    cid = message.chat.id
     location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
     cancel_btn = telebot.types.KeyboardButton('Отмена')
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     markup.row(location_btn, cancel_btn)
-    bot.send_message(message.chat.id, 'Включите геоданные', reply_markup=markup)
+
+    bot.send_message(cid, 'Включите геоданные', reply_markup=markup)
 
 
 def check_user(message):
-    if message.from_user.id not in users.users_list.keys():  # если такого пользователя не существует
-        new_user = users.User()  # создаем нового пользователя
-        users.users_list[message.from_user.id] = new_user
+    uid = message.from_user.id
+    if message.from_user.id not in users.get_users().keys():  # если такого пользователя не существует
+        users.add_user(uid)
 
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
+    cid = message.chat.id
     check_user(message)
-    bot.send_message(message.chat.id, 'Привет, ты написал мне /start', reply_markup=global_markup)
+    bot.send_message(cid, 'Привет, ты написал мне /start', reply_markup=global_markup)
 
 
 @bot.message_handler(content_types=['text'])
@@ -44,7 +49,8 @@ def send_text(message):
     check_user(message)
     cid = message.chat.id
     uid = message.from_user.id
-    user = users.users_list[uid]
+
+    user = users.get_user(uid)
 
     if message.text.lower() == 'привет':
         bot.send_message(cid, 'Привет, чем могу тебе помочь?')
@@ -58,7 +64,7 @@ def send_text(message):
         get_geo(message)
         # запрос геоданных
 
-    elif message.text.lower() == 'близкие места':
+    elif message.text.lower() == 'куда сходить':
         if user.location == {}:  # если локация ещё не записана
             bot.send_message(cid, 'Повторите попытку после включения геоданных')
             get_geo(message)
@@ -67,16 +73,20 @@ def send_text(message):
             # places.get_places(user, bot, message, '', count)
             # интересные места
 
+            item1 = types.InlineKeyboardButton("Все места поблизости", callback_data='0')
+            item2 = types.InlineKeyboardButton("Рестораны и кафе", callback_data='1')
+            item3 = types.InlineKeyboardButton("Музеи", callback_data='2')
+            item4 = types.InlineKeyboardButton("Парки", callback_data='3')
+            item5 = types.InlineKeyboardButton("Кино", callback_data='4')
+            item6 = types.InlineKeyboardButton("Магазины", callback_data='5')
+
             markup = types.InlineKeyboardMarkup()
-            markup.add(types.InlineKeyboardButton("Все места поблизости", callback_data='0'))
-            markup.add(types.InlineKeyboardButton("Рестораны", callback_data='1'))
-            markup.add(types.InlineKeyboardButton("Кафе", callback_data='2'))
-            markup.add(types.InlineKeyboardButton("Музеи", callback_data='3'))
-            markup.add(types.InlineKeyboardButton("Парки", callback_data='4'))
-            markup.add(types.InlineKeyboardButton("Магазины", callback_data='5'))
+            markup.row(item1)
+            markup.row(item2)
+            markup.row(item3, item4)
+            markup.row(item5, item6)
 
             bot.send_message(cid, 'Какие места найти?', reply_markup=markup)
-
 
     elif message.text.lower() == 'курс валют':
         markup = types.InlineKeyboardMarkup()
@@ -124,12 +134,20 @@ def handle_loc(message):
     check_user(message)
     cid = message.chat.id
     uid = message.from_user.id
-    user = users.users_list[uid]
+    user = users.get_user(uid)
 
     bot.send_message(cid, 'Мы получили вашу геолокацию', reply_markup=global_markup)
     user.location = message.location
     user.is_have_location = True
-    # print(users.users_list[message.from_user.id].location)
+    users.save_users()
+
+
+def send_places(call, user, cid):
+    places.get_places(user, bot, call.message, int(call.data), 2)
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data=call.data))
+    bot.send_message(cid, 'Хотите посмотреть ещё?', reply_markup=markup)
+
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -137,7 +155,7 @@ def callback_inline(call):
     global secreat_txt, arr_answer, query
     cid = call.message.chat.id
     uid = call.from_user.id
-    user = users.users_list[uid]
+    user = users.get_user(uid)
     try:
         if call.message.text == 'Какая Валюта нужна?':
             # if call.data[:-2] == 'currency'
@@ -147,28 +165,9 @@ def callback_inline(call):
                                                                                           int(call.data[-1]))),
                              parse_mode='Markdown')
         elif call.message.text == 'Какие места найти?':
-
-            query = ''
-            if int(call.data) == 1:
-                query = 'ресторан'
-            elif int(call.data) == 2:
-                query = 'кафе'
-            elif int(call.data) == 3:
-                query = 'музей'
-            elif int(call.data) == 4:
-                query = 'парк'
-            elif int(call.data) == 5:
-                query = 'магазин'
-
-            places.get_places(user, bot, call.message, query, 3)
-            markup = types.InlineKeyboardMarkup()
-            item1 = types.InlineKeyboardButton("3", callback_data='вернуть ещё3')
-            item2 = types.InlineKeyboardButton("4", callback_data='вернуть ещё4')
-            item3 = types.InlineKeyboardButton("5", callback_data='вернуть ещё5')
-            markup.add(item1, item2, item3)
-            bot.send_message(cid,
-                             'Сколько ещё записей надо вывести?', reply_markup=markup)
-
+            send_places(call, user, cid)
+        elif call.message.text == 'Хотите посмотреть ещё?':
+            send_places(call, user, cid)
 
         elif 'опрос_00' == call.data[:-1]:
             num = int(call.data[-2:])
