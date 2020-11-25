@@ -15,8 +15,9 @@ global_markup.row('Погода', 'Курс валют')
 
 def get_geo(message):
     location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
+    cancel_btn = telebot.types.KeyboardButton('Отмена')
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    markup.row(location_btn)
+    markup.row(location_btn, cancel_btn)
     bot.send_message(message.chat.id, 'Включите геоданные', reply_markup=markup)
 
 
@@ -43,6 +44,8 @@ def send_text(message):
         bot.send_message(cid, 'Привет, чем могу тебе помочь?')
     elif message.text.lower() == 'пока':
         bot.send_message(cid, 'До связи!')
+    elif message.text.lower() == 'отмена':
+        bot.send_message(cid, 'Чем ещё я могу помочь?', reply_markup=global_markup)
         # простые сообщения
 
     elif message.text.lower() == 'обновить мою геолокацию':
