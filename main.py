@@ -5,7 +5,9 @@ import users
 import places
 import converter
 
-API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'
+# API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8' - сервер главный
+# API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM' - доп сервер для проверки
+API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'
 bot = telebot.TeleBot(API_KEY)
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -14,6 +16,8 @@ global_markup.row('Погода', 'Курс валют')
 global_markup.row('Пройти Опрос')
 arr_answer = {'опрос_00': 4, 'опрос_01': 4, 'опрос_02': 4, 'опрос_03': 4, 'опрос_04': 4, }
 secreat_txt, query = '', ''
+
+
 def get_geo(message):
     location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
     cancel_btn = telebot.types.KeyboardButton('Отмена')
@@ -126,6 +130,7 @@ def handle_loc(message):
     user.location = message.location
     user.is_have_location = True
     # print(users.users_list[message.from_user.id].location)
+
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
@@ -248,7 +253,7 @@ def callback_inline(call):
             bot.send_message(cid,
                              'Спасибо за пройденный тест, возможно на данный момент наш бот не'
                              ' способен искать места по вашим интересам, но скоро это точно изменится)')
-        elif 'вернуть ещё' ==  call.data[:-1]:
+        elif 'вернуть ещё' == call.data[:-1]:
             places.get_places(user, bot, call.message, query, int(call.data[-1]))
             markup = types.InlineKeyboardMarkup()
             item1 = types.InlineKeyboardButton("3", callback_data='вернуть ещё3')
