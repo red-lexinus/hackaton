@@ -188,13 +188,13 @@ def callback_inline(call):
                                                                                     converter.converter_1(
                                                                                         int(call.data))))
                 bot.send_message(call.chat.id,
-                                 'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
+                                 'Полная информация находится на сайте'
+                                 ' https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
             elif 'опрос_00' == call.data[:-1]:
                 num = int(call.data[-2:])
                 arr_answer[call.data[0:-1]] = num
                 secreat_txt = call.data[0:-1]
-                bot.send_message(cid,
-                                 'Спасибо за ответ')
+
                 markup = types.InlineKeyboardMarkup()
                 item1 = types.InlineKeyboardButton("Да", callback_data='опрос_010')
                 item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_011')
@@ -224,17 +224,56 @@ def callback_inline(call):
                 num = int(call.data[-2:])
                 arr_answer[call.data[0:-1]] = num
                 secreat_txt = call.data[0:-1]
-                bot.send_message(cid,
-                                 'Спасибо за ответ')
+
                 markup = types.InlineKeyboardMarkup()
                 item1 = types.InlineKeyboardButton("Да", callback_data='опрос_030')
                 item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_031')
                 item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_032')
+                item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_033')
+                markup.add(item1, item3)
+                markup.add(item5, item2)
+                bot.send_message(cid,
+                                 'хотите ли вы для разнообразия посмотреть на гостиницы и снова начть завидовать?',
+                                 reply_markup=markup)
+            elif 'опрос_03' == call.data[:-1]:
+                num = int(call.data[-2:])
+                arr_answer[call.data[0:-1]] = num
+                secreat_txt = call.data[0:-1]
+
+                markup = types.InlineKeyboardMarkup()
+                item1 = types.InlineKeyboardButton("Да", callback_data='опрос_040')
+                item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_041')
+                item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_042')
                 item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_043')
                 markup.add(item1, item3)
                 markup.add(item5, item2)
                 bot.send_message(cid,
-                                 '?', reply_markup=markup)
+                                 'ходите ли вы в неизвестные вам рестораны?', reply_markup=markup)
+
+            elif 'опрос_04' == call.data[:-1]:
+                num = int(call.data[-2:])
+                arr_answer[call.data[0:-1]] = num
+                secreat_txt = call.data[0:-1]
+
+                markup = types.InlineKeyboardMarkup()
+                item1 = types.InlineKeyboardButton("-5", callback_data='опрос_050')
+                item5 = types.InlineKeyboardButton("-10", callback_data='опрос_051')
+                item2 = types.InlineKeyboardButton("-15", callback_data='опрос_052')
+                item3 = types.InlineKeyboardButton("-20", callback_data='опрос_053')
+                item6 = types.InlineKeyboardButton("-25", callback_data='опрос_054')
+                item7 = types.InlineKeyboardButton("-30", callback_data='опрос_055')
+                markup.add(item1, item5)
+                markup.add(item2, item3)
+                markup.add(item6, item7)
+                bot.send_message(cid,
+                                 'При какой темпиратуре вы не хотите выходить на прогулку?', reply_markup=markup)
+            elif 'опрос_05' == call.data[:-1]:
+                num = int(call.data[-2:])
+                arr_answer[call.data[0:-1]] = num
+                secreat_txt = call.data[0:-1]
+                bot.send_message(cid,
+                                 'Спасибо за пройденный тест, возможно на данный момент наш бот не'
+                                 ' способен искать места по вашим интересам, но скоро это точно изменится)')
 
 
 
