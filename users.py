@@ -17,9 +17,14 @@ class User:  # класс пользователь
         self.parks = []
         self.cinemas = []
         self.shops = []
+        self.setting = [0, 4, 8, 12, 16, 20]
+        self.flag = False
+        self.min_temp = -25
 
 
 users_list = dict()  # список всех пользователей
+
+
 # ключ - id пользователя, значение - класс с информацией о пользователе
 
 

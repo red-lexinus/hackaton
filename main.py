@@ -4,10 +4,11 @@ import weather
 import users
 import places
 import converter
+import random
 
 # API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
-# API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM' # доп сервер для проверки
-API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
+API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'  # доп сервер для проверки
+# API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
 bot = telebot.TeleBot(API_KEY)
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -34,6 +35,7 @@ def check_user(message):
     uid = message.from_user.id
     if message.from_user.id not in users.get_users().keys():  # если такого пользователя не существует
         users.add_user(uid)
+        user = users.get_user(uid)
 
 
 @bot.message_handler(commands=['start'])
@@ -72,15 +74,15 @@ def send_text(message):
             # count = 3
             # places.get_places(user, bot, message, '', count)
             # интересные места
-
+            markup = types.InlineKeyboardMarkup()
+            if user.flag:
+                markup.row(types.InlineKeyboardButton("Места с приоритетом на ваши интересы", callback_data='test_1121'))
             item1 = types.InlineKeyboardButton("Все места поблизости", callback_data='0')
             item2 = types.InlineKeyboardButton("Рестораны и кафе", callback_data='1')
             item3 = types.InlineKeyboardButton("Музеи", callback_data='2')
             item4 = types.InlineKeyboardButton("Парки", callback_data='3')
             item5 = types.InlineKeyboardButton("Кино", callback_data='4')
             item6 = types.InlineKeyboardButton("Магазины", callback_data='5')
-
-            markup = types.InlineKeyboardMarkup()
             markup.row(item1)
             markup.row(item2)
             markup.row(item3, item4)
@@ -167,6 +169,8 @@ def callback_inline(call):
     cid = call.message.chat.id
     uid = call.from_user.id
     user = users.get_user(uid)
+    max_num = 0
+
     try:
         if call.message.text == 'Какая Валюта нужна?':
             # if call.data[:-2] == 'currency'
@@ -175,6 +179,18 @@ def callback_inline(call):
                                                                                       converter.converter_1(
                                                                                           int(call.data[-1]))),
                              parse_mode='Markdown')
+        elif call.data == 'test_1121' or call.message.text == 'Хотите посмотреть ещё??':
+            number = random.randint(0, user.setting[5])
+            x, y = 0, 0
+            for i in user:
+                if i >= number and x == 0:
+                    x = y
+                y += 1
+            arc = {0: 5, 1: 5, 2: 2, 3: 1, 4: 4, 5: 3}
+            places.get_places(user, bot, call.message, arc[x], 2)
+            markup = types.InlineKeyboardMarkup()
+            markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data=call.data))
+            bot.send_message(cid, 'Хотите посмотреть ещё??', reply_markup=markup)
         elif call.message.text == 'Какие места найти?':
             send_places(call, user, cid)
         elif call.message.text == 'Хотите посмотреть ещё?':
@@ -189,7 +205,9 @@ def callback_inline(call):
                 weather.three_days_weather(user, bot, call.message)
 
         elif 'опрос_00' == call.data[:-1]:
-            num = int(call.data[-2:])
+            num = int(call.data[-1:])
+            max_num = 4 - num
+            user.setting[1] = max_num
             arr_answer[call.data[0:-1]] = num
             secreat_txt = call.data[0:-1]
             markup = types.InlineKeyboardMarkup()
@@ -199,12 +217,15 @@ def callback_inline(call):
             item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_013')
             markup.add(item1, item3)
             markup.add(item5, item2)
+            users.save_users()
             bot.send_message(cid,
-                             'Скажите вам нравится спонтанно посещать театры и кино?', reply_markup=markup)
+                             'Скажите вам нравится спонтанно посещать музеи?', reply_markup=markup)
 
         elif 'опрос_01' == call.data[:-1]:
 
-            num = int(call.data[-2:])
+            num = int(call.data[-1:])
+            max_num = user.setting[1] + 4 - num
+            user.setting[2] = max_num
             arr_answer[call.data[0:-1]] = num
             secreat_txt = call.data[0:-1]
             markup = types.InlineKeyboardMarkup()
@@ -213,14 +234,16 @@ def callback_inline(call):
             item2 = types.InlineKeyboardButton("почти никогда", callback_data='опрос_022')
             item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_023')
             markup.add(item1, item3)
+            users.save_users()
             markup.add(item5, item2)
             bot.send_message(cid,
-                             'Хотите ли вы гулять в парках?', reply_markup=markup)
+                             'ходите ли вы в неизвестные вам рестораны?', reply_markup=markup)
         elif 'опрос_02' == call.data[:-1]:
-            num = int(call.data[-2:])
+            num = int(call.data[-1:])
             arr_answer[call.data[0:-1]] = num
             secreat_txt = call.data[0:-1]
-
+            max_num = user.setting[2] + 4 - num
+            user.setting[3] = max_num
             markup = types.InlineKeyboardMarkup()
             item1 = types.InlineKeyboardButton("Да", callback_data='опрос_030')
             item5 = types.InlineKeyboardButton("Иногда хочу)", callback_data='опрос_031')
@@ -228,15 +251,16 @@ def callback_inline(call):
             item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_033')
             markup.add(item1, item3)
             markup.add(item5, item2)
+            users.save_users()
             bot.send_message(cid,
-                             'хотите ли вы для разнообразия посмотреть на гостиницы'
-                             ' и снова начать завидовать кому-нибудь?',
+                             'Скажите вам нравится спонтанно посещать кинотеатры?',
                              reply_markup=markup)
         elif 'опрос_03' == call.data[:-1]:
-            num = int(call.data[-2:])
+            num = int(call.data[-1:])
             arr_answer[call.data[0:-1]] = num
             secreat_txt = call.data[0:-1]
-
+            max_num = user.setting[3] + 4 - num
+            user.setting[4] = max_num
             markup = types.InlineKeyboardMarkup()
             item1 = types.InlineKeyboardButton("Да", callback_data='опрос_040')
             item5 = types.InlineKeyboardButton("Иногда)", callback_data='опрос_041')
@@ -244,42 +268,42 @@ def callback_inline(call):
             item3 = types.InlineKeyboardButton("Совершенно нет", callback_data='опрос_043')
             markup.add(item1, item3)
             markup.add(item5, item2)
+            users.save_users()
             bot.send_message(cid,
-                             'ходите ли вы в неизвестные вам рестораны?', reply_markup=markup)
+                             'Хотите ли вы гулять в парках?', reply_markup=markup)
 
         elif 'опрос_04' == call.data[:-1]:
-            num = int(call.data[-2:])
+            num = int(call.data[-1:])
             arr_answer[call.data[0:-1]] = num
             secreat_txt = call.data[0:-1]
+            max_num = user.setting[4] + 4 - num
+            user.setting[5] = max_num
+            users.save_users()
 
             markup = types.InlineKeyboardMarkup()
-            item1 = types.InlineKeyboardButton("-5", callback_data='опрос_050')
-            item5 = types.InlineKeyboardButton("-10", callback_data='опрос_051')
-            item2 = types.InlineKeyboardButton("-15", callback_data='опрос_052')
-            item3 = types.InlineKeyboardButton("-20", callback_data='опрос_053')
-            item6 = types.InlineKeyboardButton("-25", callback_data='опрос_054')
-            item7 = types.InlineKeyboardButton("-30", callback_data='опрос_055')
+            item1 = types.InlineKeyboardButton("0", callback_data='опрос_050')
+            item5 = types.InlineKeyboardButton("-5", callback_data='опрос_051')
+            item2 = types.InlineKeyboardButton("-10", callback_data='опрос_052')
+            item3 = types.InlineKeyboardButton("-15", callback_data='опрос_053')
+            item6 = types.InlineKeyboardButton("-20", callback_data='опрос_054')
+            item7 = types.InlineKeyboardButton("-25", callback_data='опрос_055')
             markup.add(item1, item5)
             markup.add(item2, item3)
             markup.add(item6, item7)
             bot.send_message(cid,
                              'При какой темпиратуре вы не хотите выходить на прогулку?', reply_markup=markup)
         elif 'опрос_05' == call.data[:-1]:
-            num = int(call.data[-2:])
+            num = int(call.data[-1:])
+            user.min_temp = -5 * num
             arr_answer[call.data[0:-1]] = num
             secreat_txt = call.data[0:-1]
+            user.flag = True
+            users.save_users()
             bot.send_message(cid,
-                             'Спасибо за пройденный тест, возможно на данный момент наш бот не'
-                             ' способен искать места по вашим интересам, но скоро это точно изменится)')
-        elif 'вернуть ещё' == call.data[:-1]:
-            places.get_places(user, bot, call.message, query, int(call.data[-1]))
-            markup = types.InlineKeyboardMarkup()
-            item1 = types.InlineKeyboardButton("3", callback_data='вернуть ещё3')
-            item2 = types.InlineKeyboardButton("4", callback_data='вернуть ещё4')
-            item3 = types.InlineKeyboardButton("5", callback_data='вернуть ещё5')
-            markup.add(item1, item2, item3)
-            bot.send_message(cid,
-                             'Сколько ещё записей надо вывести?', reply_markup=markup)
+                             'Спасибо за пройденный тест, теперь вы можете использовать поиск учитывая ваши приоритеты')
+            print(user.setting)
+            print(user.flag)
+            print(user.min_temp)
 
     except:
         pass
