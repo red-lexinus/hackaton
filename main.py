@@ -5,14 +5,12 @@ import users
 import places
 import converter
 
-bot = telebot.TeleBot('1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8')
+API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'
+bot = telebot.TeleBot(API_KEY)
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
 global_markup.row('Близкие места', 'Обновить мою геолокацию')
 global_markup.row('Погода', 'Курс валют')
-
-
-# current_ind = -1  # индекс пользователя в массиве пользователей
 
 
 def get_geo(message):
@@ -22,29 +20,24 @@ def get_geo(message):
     bot.send_message(message.chat.id, 'Включите геоданные', reply_markup=markup)
 
 
-@bot.message_handler(commands=['start'])
-def start_message(message):
-    bot.send_message(message.chat.id, 'Привет, ты написал мне /start', reply_markup=global_markup)
-
+def check_user(message):
     if message.from_user.id not in users.users_list.keys():  # если такого пользователя не существует
         new_user = users.User()  # создаем нового пользователя
         users.users_list[message.from_user.id] = new_user
 
-    # print(message.from_user.id)
-    # print(users.users_list)
+
+@bot.message_handler(commands=['start'])
+def start_message(message):
+    check_user(message)
+    bot.send_message(message.chat.id, 'Привет, ты написал мне /start', reply_markup=global_markup)
 
 
 @bot.message_handler(content_types=['text'])
 def send_text(message):
-    try:
-        cid = message.chat.id
-        user = users.users_list[cid]
-    except:
-        if message.from_user.id not in users.users_list.keys():  # если такого пользователя не существует
-            new_user = users.User()  # создаем нового пользователя
-            users.users_list[message.from_user.id] = new_user
-        cid = message.chat.id
-        user = users.users_list[cid]
+    check_user(message)
+    cid = message.chat.id
+    uid = message.from_user.id
+    user = users.users_list[uid]
 
     if message.text.lower() == 'привет':
         bot.send_message(cid, 'Привет, чем могу тебе помочь?')
@@ -102,7 +95,10 @@ def sticker_id(message):
 
 @bot.message_handler(content_types=['location'])
 def handle_loc(message):
-    user = users.users_list[message.from_user.id]
+    check_user(message)
+    cid = message.chat.id
+    uid = message.from_user.id
+    user = users.users_list[uid]
 
     bot.send_message(message.chat.id, 'Мы получили вашу геолокацию', reply_markup=global_markup)
     user.location = message.location
