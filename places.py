@@ -84,6 +84,7 @@ def get_all_places(user):
         data = json.loads(req.text)['response']
 
         places = data['groups'][0]['items']
+        places = sort_arr(places)
 
         if query == '':
             user.all_places = places
@@ -100,8 +101,8 @@ def get_all_places(user):
 
         users.save_users()
 
+
 def sort_arr(arr):
     for d in range(len(arr)):
         arr[d].update({'distance': arr[d]['venue']['location']['distance']})
-    return sorted(arr, key=lambda x: x['distance'])
-
+    return sorted(arr, key=lambda x: x['distance'], reverse=False)
