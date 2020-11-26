@@ -34,36 +34,21 @@ def get_places(user, bot, message, choice=0, lim=5, pos=0):
     if data["totalResults"] == 0:
         bot.send_message(message.chat.id, 'Мест не найдено')
         return 0
-
-    how_many_show = lim if user.saw_counter[choice] + lim < user.places_count[choice] \
-        else user.places_count[choice] - user.saw_counter[choice]
-
-    text = f'В радиусе {data["suggestedRadius"]} метров от вас нашлось {data["totalResults"]} места\n\n'
-    text += f'Вот *{how_many_show}* из них:'
-    bot.send_message(message.chat.id, text, parse_mode='Markdown')
-
+    elif data['totalResults'] < pos + lim:
+        bot.send_message(message.chat.id, 'Мест не найдено')
+        return 0
     places = data['groups'][0]['items']
     places = sort_arr(places)
-    for i in range(how_many_show):
-        while "address" not in places[user.saw_counter[choice]]["venue"]["location"]:
-            user.saw_counter[choice] += 1
-            if user.saw_counter[choice] >= user.places_count[choice] - 1:
-                user.saw_counter[choice] = 0
-
-        place = places[user.saw_counter[choice]]
+    text = f'В радиусе {places[-1]["distance"]} метров от вас нашлось {data["totalResults"]} места\n\n'
+    text += f'Вот *{lim}* из них:'
+    bot.send_message(message.chat.id, text, parse_mode='Markdown')
+    for i in range(lim):
+        place = places[i + pos]
         text = f'*{place["venue"]["name"]}*\n'
         text += f'Находится по адресу: {place["venue"]["location"]["address"]}\n'
         text += f'В {place["venue"]["location"]["distance"]} метрах от вас\n'
         bot.send_message(message.chat.id, text, parse_mode='Markdown')
         bot.send_location(message.chat.id, place["venue"]["location"]["lat"], place["venue"]["location"]["lng"])
-
-        user.saw_counter[choice] += 1
-
-    if user.saw_counter[choice] >= user.places_count[choice] - 1:
-        user.saw_counter[choice] = 0
-
-    users.save_users()
-    return 1
 
 
 def get_all_places(user):
@@ -77,12 +62,11 @@ def get_all_places(user):
             ll='{},{}'.format(user.location.latitude, user.location.longitude),
             query=query,
             locale='ru',
-            limit=15
+            limit=100
         )
 
         req = requests.get(url=url, params=params)
         data = json.loads(req.text)['response']
-
         places = data['groups'][0]['items']
         places = sort_arr(places)
 
@@ -99,7 +83,7 @@ def get_all_places(user):
         if query == 'магазин':
             user.shops = places
 
-        users.save_users()
+
 
 
 def sort_arr(arr):

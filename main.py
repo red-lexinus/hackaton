@@ -20,6 +20,7 @@ arr_answer = {'опрос_00': 4, 'опрос_01': 4, 'опрос_02': 4, 'оп�
 
 secreat_txt, query = '', ''
 
+
 def get_geo(cid, var):
     if var == 0:
         location_btn = telebot.types.KeyboardButton('Разрешить использовать геолокацию', request_location=True)
@@ -171,19 +172,19 @@ def handle_loc(message):
     try:
         places.get_all_places(user)
         users.save_users()
-        # баг - файл users.dat слишком сильно заполняется и возникает ошибка
-        # потом постараюсь исправить, сделал так чтобы работал имеющийся функционал
     except:
         print('error')
         pass
 
 
-def send_places(call, user, cid):
-    result = places.get_places(user, bot, call.message, int(call.data), 2)
+def send_places(call, user, cid, pos):
+    result = places.get_places(user, bot, call.message, int(call.data), 2, pos)
     if result != 0:
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data=call.data))
         bot.send_message(cid, 'Хотите посмотреть ещё?', reply_markup=markup)
+    else:
+        pass
 
 
 @bot.callback_query_handler(func=lambda call: True)
