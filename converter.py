@@ -1,7 +1,8 @@
 from pycbrf.toolbox import ExchangeRates
+import datetime
 
 
-def converter_1(currency=0, date='2020-11-27'):
+def converter_1(currency=0, date=datetime.date.today()):
     # USD - доллар EUR - евро XDR - резервная валюта мира
     # GBP - английский фунт   CHF - швейцарский франк
 
