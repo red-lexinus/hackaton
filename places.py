@@ -5,7 +5,7 @@ import users
 url = 'https://api.foursquare.com/v2/venues/explore'
 
 
-def get_places(user, bot, message, choice=0, lim=5):
+def get_places(user, bot, message, choice=0, lim=5, pos=0):
     query = ''
     if choice == 1:
         query = 'ресторан'  # и кафе
