@@ -2,7 +2,6 @@ import json
 import requests
 import users
 
-
 url = 'https://api.foursquare.com/v2/venues/explore'
 
 
@@ -44,6 +43,7 @@ def get_places(user, bot, message, choice=0, lim=5):
     bot.send_message(message.chat.id, text, parse_mode='Markdown')
 
     places = data['groups'][0]['items']
+    places = sort_arr(places)
     for i in range(how_many_show):
         while "address" not in places[user.saw_counter[choice]]["venue"]["location"]:
             user.saw_counter[choice] += 1
@@ -99,4 +99,9 @@ def get_all_places(user):
             user.shops = places
 
         users.save_users()
+
+def sort_arr(arr):
+    for d in range(len(arr)):
+        arr[d].update({'distance': arr[d]['venue']['location']['distance']})
+    return sorted(arr, key=lambda x: x['distance'])
 

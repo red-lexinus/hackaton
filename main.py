@@ -7,7 +7,7 @@ import converter
 import random
 
 API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
-#API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'  # доп сервер для проверки
+# API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'  # доп сервер для проверки
 # API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
 bot = telebot.TeleBot(API_KEY)
 
@@ -19,7 +19,6 @@ global_markup.row('Пройти Опрос')
 arr_answer = {'опрос_00': 4, 'опрос_01': 4, 'опрос_02': 4, 'опрос_03': 4, 'опрос_04': 4, }
 
 secreat_txt, query = '', ''
-
 
 def get_geo(cid, var):
     if var == 0:
@@ -90,7 +89,8 @@ def send_text(message):
             # интересные места
             markup = types.InlineKeyboardMarkup()
             if user.flag:
-                markup.row(types.InlineKeyboardButton("Места с приоритетом на ваши интересы", callback_data='test_1121'))
+                markup.row(
+                    types.InlineKeyboardButton("Места с приоритетом на ваши интересы", callback_data='test_1121'))
             item1 = types.InlineKeyboardButton("Все места поблизости", callback_data='0')
             item2 = types.InlineKeyboardButton("Рестораны и кафе", callback_data='1')
             item3 = types.InlineKeyboardButton("Музеи", callback_data='2')
