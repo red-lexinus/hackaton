@@ -21,6 +21,19 @@ class User:  # класс пользователь
         self.flag = False
         self.min_temp = -25
 
+    def normalization(self):
+        self.places_count = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
+        self.saw_counter = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
+
+        self.all_places = []
+        self.food = []
+        self.museums = []
+        self.parks = []
+        self.cinemas = []
+        self.shops = []
+
+
+
 
 users_list = dict()  # список всех пользователей
 

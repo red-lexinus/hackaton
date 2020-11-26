@@ -158,7 +158,7 @@ def handle_loc(message):
     cid = message.chat.id
     uid = message.from_user.id
     user = users.get_user(uid)
-
+    user.normalization()
     bot.send_message(cid, 'Мы получили геолокацию', reply_markup=global_markup)
     user.location = message.location
     user.is_have_location = True
@@ -190,6 +190,7 @@ def callback_inline(call):
     cid = call.message.chat.id
     uid = call.from_user.id
     user = users.get_user(uid)
+    check_user(call.message)
     max_num = 0
 
     try:
@@ -225,6 +226,7 @@ def callback_inline(call):
         elif call.message.text == 'Хотите посмотреть ещё?':
             send_places(call, user, cid)
         elif call.message.text == 'Выберите вариант погоды ⛅':
+            print(user.get_temp())
             # weather.get_weather(user, bot, message)
             if int(call.data) == 0:
                 weather.simple_weather(user, bot, call.message)
