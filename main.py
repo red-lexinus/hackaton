@@ -6,9 +6,7 @@ import places
 import converter
 import random
 
-# API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер главный
 # API_KEY = '1490136397:AAGBVHl11KrtaDOegAKEY9NmXg0Xi4lbCBM'  # доп сервер для проверки
-# API_KEY = '1441207003:AAGNLyY2bgkMp1ustFpUnGtAlauqcumZJ-g'  # паша - тестовый ключ
 
 API_KEY = '1472498348:AAFq9Qdmv_DRnAd67C79SWrQje0MBrxpnHw'  # новый основной бот!!!
 # @TonRetch_bot - в тг
