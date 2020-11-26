@@ -12,9 +12,9 @@ API_KEY = '1462012638:AAFrR38qrVfg7anRelUid5hEAtbaNtq7rH8'  # сервер гл�
 bot = telebot.TeleBot(API_KEY)
 
 global_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-global_markup.row('Куда сходить', 'Обновить мою геолокацию')
+global_markup.row('Куда сходить', 'Обновить геолокацию')
 global_markup.row('Погода', 'Курс валют')
-global_markup.row('Пройти Опрос')
+global_markup.row('Пройти опрос')
 
 arr_answer = {'опрос_00': 4, 'опрос_01': 4, 'опрос_02': 4, 'опрос_03': 4, 'опрос_04': 4, }
 
@@ -76,7 +76,7 @@ def send_text(message):
         bot.send_message(cid, 'Чем ещё я могу помочь?', reply_markup=global_markup)
         # простые сообщения
 
-    elif message.text.lower() == 'обновить мою геолокацию':
+    elif message.text.lower() == 'обновить геолокацию':
         ask_for_geo(cid)
         # запрос геоданных
 
@@ -90,34 +90,32 @@ def send_text(message):
             if user.flag:
                 markup.row(types.InlineKeyboardButton("Места с приоритетом на ваши интересы", callback_data='test_1121'))
             item1 = types.InlineKeyboardButton("Все места поблизости", callback_data='0')
-            item2 = types.InlineKeyboardButton("Рестораны и кафе", callback_data='1')
-            item3 = types.InlineKeyboardButton("Музеи", callback_data='2')
-            item4 = types.InlineKeyboardButton("Парки", callback_data='3')
-            item5 = types.InlineKeyboardButton("Кино", callback_data='4')
-            item6 = types.InlineKeyboardButton("Магазины", callback_data='5')
+            item2 = types.InlineKeyboardButton("Рестораны и кафе 🍽️", callback_data='1')
+            item3 = types.InlineKeyboardButton("Музеи 🏛️", callback_data='2')
+            item4 = types.InlineKeyboardButton("Парки 🌳", callback_data='3')
+            item5 = types.InlineKeyboardButton("Кино 🎥", callback_data='4')
+            item6 = types.InlineKeyboardButton("Магазины 🛒", callback_data='5')
             markup.row(item1)
             markup.row(item2)
             markup.row(item3, item4)
             markup.row(item5, item6)
 
-            bot.send_message(cid, 'Какие места найти?', reply_markup=markup)
+            bot.send_message(cid, 'Какие места найти? 🚶', reply_markup=markup)
 
     elif message.text.lower() == 'курс валют':
         markup = types.InlineKeyboardMarkup()
-        item1 = types.InlineKeyboardButton("Доллар 💲", callback_data='0')
+        item1 = types.InlineKeyboardButton("Доллар $", callback_data='0')
         item5 = types.InlineKeyboardButton("Резервная валюта мира", callback_data='2')
-        item2 = types.InlineKeyboardButton("Евро 🇪🇺", callback_data='1')
-        item3 = types.InlineKeyboardButton("Английский фунт 💷", callback_data='3')
-        item4 = types.InlineKeyboardButton("Швейцарский франк 🇨🇭", callback_data='4')
-        markup.add(item1)
-        markup.add(item2)
+        item2 = types.InlineKeyboardButton("Евро €", callback_data='1')
+        item3 = types.InlineKeyboardButton("Английский фунт £", callback_data='3')
+        item4 = types.InlineKeyboardButton("Швейцарский франк ₣", callback_data='4')
+        markup.row(item1, item2)
         markup.add(item3)
         markup.add(item4)
         markup.add(item5)
+        markup.add(types.InlineKeyboardButton("Полная информация о курсах", callback_data='5'))
 
-        bot.send_message(cid, 'Какая Валюта нужна?', reply_markup=markup)
-        bot.send_message(cid,
-                         'Полная информация находится на сайте https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
+        bot.send_message(cid, 'Какая валюта вас интересует?', reply_markup=markup)
 
     elif message.text.lower() == 'погода':
         if user.location == {}:  # если локация ещё не записана
@@ -129,7 +127,7 @@ def send_text(message):
             markup.add(types.InlineKeyboardButton("Подробная погода", callback_data='1'))
             markup.add(types.InlineKeyboardButton("Прогноз на 3 дня", callback_data='2'))
 
-            bot.send_message(cid, 'Выберите вариант погоды', reply_markup=markup)
+            bot.send_message(cid, 'Выберите вариант погоды ⛅', reply_markup=markup)
 
         # погода
 
@@ -150,8 +148,8 @@ def send_text(message):
 
 @bot.message_handler(content_types=['sticker'])
 def sticker_id(message):
-    # print(message)
-    pass
+    bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAIMA1-_elxUNoSiKjuUns_Lsi_QXoI0AAL1AAMw1J0R3NeLwV6aUvUeBA')
+    # CAACAgIAAxkBAAIMA1-_elxUNoSiKjuUns_Lsi_QXoI0AAL1AAMw1J0R3NeLwV6aUvUeBA
 
 
 @bot.message_handler(content_types=['location'])
@@ -195,13 +193,17 @@ def callback_inline(call):
     max_num = 0
 
     try:
-        if call.message.text == 'Какая Валюта нужна?':
-            # if call.data[:-2] == 'currency'
-            arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
-            bot.send_message(cid, 'Курс валюты {} на сегодня\n*{:.2f}* рублей'.format(arr_valua[int(call.data[-1])],
-                                                                                      converter.converter_1(
-                                                                                          int(call.data[-1]))),
-                             parse_mode='Markdown')
+        if call.message.text == 'Какая валюта вас интересует?':
+            print()
+            if int(call.data) == 5:
+                bot.send_message(cid, 'Полная информация находится на сайте\n https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
+
+            else:
+                arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
+                bot.send_message(cid, 'Курс валюты _{}_ \n*{:.2f}* рублей'.format(arr_valua[int(call.data)],
+                                                                                    converter.converter_1(
+                                                                                    int(call.data))),
+                                                                                    parse_mode='Markdown')
         elif call.data == 'test_1121':
             number = random.randint(0, user.setting[5])
 
@@ -218,11 +220,11 @@ def callback_inline(call):
             markup.add(types.InlineKeyboardButton("Посмотреть ещё", callback_data='test_1121'))
             bot.send_message(cid, 'Хотите посмотреть ещё??', reply_markup=markup)
 
-        elif call.message.text == 'Какие места найти?':
+        elif call.message.text == 'Какие места найти? 🚶':
             send_places(call, user, cid)
         elif call.message.text == 'Хотите посмотреть ещё?':
             send_places(call, user, cid)
-        elif call.message.text == 'Выберите вариант погоды':
+        elif call.message.text == 'Выберите вариант погоды ⛅':
             # weather.get_weather(user, bot, message)
             if int(call.data) == 0:
                 weather.simple_weather(user, bot, call.message)
