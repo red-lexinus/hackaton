@@ -130,4 +130,4 @@ def get_temp(user):
     data = res.json()
     weather = data['list'][0]
 
-    return weather["main"]["temp"]
+    return weather["main"]["feels_like"]

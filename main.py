@@ -90,7 +90,8 @@ def send_text(message):
             # интересные места
             markup = types.InlineKeyboardMarkup()
             if user.flag:
-                markup.row(types.InlineKeyboardButton("Места с приоритетом на ваши интересы", callback_data='test_1121'))
+                markup.row(
+                    types.InlineKeyboardButton("Места с приоритетом на ваши интересы", callback_data='test_1121'))
             item1 = types.InlineKeyboardButton("Все места поблизости", callback_data='0')
             item2 = types.InlineKeyboardButton("Рестораны и кафе 🍽️", callback_data='1')
             item3 = types.InlineKeyboardButton("Музеи 🏛️", callback_data='2')
@@ -101,6 +102,8 @@ def send_text(message):
             markup.row(item2)
             markup.row(item3, item4)
             markup.row(item5, item6)
+            markup.row(types.InlineKeyboardButton("Очистить историю(все объекты будут показаны занаво)",
+                                                  callback_data='clear_history'))
 
             bot.send_message(cid, 'Какие места найти? 🚶', reply_markup=markup)
 
@@ -198,16 +201,25 @@ def callback_inline(call):
         if call.message.text == 'Какая валюта вас интересует?':
             print()
             if int(call.data) == 5:
-                bot.send_message(cid, 'Полная информация находится на сайте\n https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
+                bot.send_message(cid,
+                                 'Полная информация находится на сайте\n'
+                                 ' https://www.banki.ru/products/currency/cash/moskva/#bank-rates')
 
             else:
                 arr_valua = ['доллар', 'евро', 'резервная валюта мира', 'английский фунт', 'швейцарский франк']
                 bot.send_message(cid, 'Курс валюты _{}_ \n*{:.2f}* рублей'.format(arr_valua[int(call.data)],
-                                                                                    converter.converter_1(
-                                                                                    int(call.data))),
-                                                                                    parse_mode='Markdown')
+                                                                                  converter.converter_1(
+                                                                                      int(call.data))),
+                                 parse_mode='Markdown')
+        elif call.data == 'clear_history':
+            user.normalized()
+            bot.send_message(cid,
+                             'Вы очистили историю, теперь все старые запросы вам попадутся вновь')
+
         elif call.data == 'test_1121':
             number = random.randint(0, user.setting[5])
+            if int(weather.get_temp(user)) <= user.min_temp:
+                number = random.randint(0, user.setting[4])
 
             x, y = 0, 0
             for i in user.setting:
@@ -239,7 +251,7 @@ def callback_inline(call):
             get_geo(cid, int(call.data))
 
         elif 'опрос_00' == call.data[:-1]:
-            get_places_for_opros(user)
+            #get_places_for_opros(user)
 
             num = int(call.data[-1:])
             max_num = 4 - num
